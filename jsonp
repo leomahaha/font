@@ -1,0 +1,29 @@
+1.Ajax直接请求普通文件存在跨域无权限访问的问题，为了解决这问题，于是有了JSONP。
+2.Web页面上调用js文件时则不受是否跨域的影响，JSON还被js原生支持，所以有了解决方案：远程服务器上设法把数据装进js格式的文件里，供客户端调用和进一步处理，
+这个js格式文件（一般以JSON为后缀）。
+3.该协议的一个要点就是允许用户传递一个callback参数给服务端，然后服务端返回数据时会将这个callback参数作为函数名来包裹住JSON数据，
+这样客户端就可以随意定制自己的函数来自动处理返回数据了。
+
+！-------example-------
+jQuery(document).ready(function(){ 
+        $.ajax({
+             type: "get",
+             async: false,
+             url: "http://flightQuery.com/jsonp/flightResult.aspx?code=CA1998",
+             dataType: "jsonp",
+             jsonp: "callback",//传递给请求处理程序或页面的，用以获得jsonp回调函数名的参数名(一般默认为:callback)
+             jsonpCallback:"flightHandler",//自定义的jsonp回调函数名称，默认为jQuery自动生成的随机函数名，也可以写"?"，jQuery会自动为你处理数据
+             success: function(json){
+                 alert('您查询到航班信息：票价： ' + json.price + ' 元，余票： ' + json.tickets + ' 张。');
+             },
+             error: function(){
+                 alert('fail');
+             }
+         });
+     });
+
+
+ajax与jsonp的异同：
+1、ajax和jsonp这两种技术在调用方式上”看起来”很像，目的也一样，都是请求一个url，然后把服务器返回的数据进行处理，因此jquery和ext等框架都把jsonp作为
+ajax的一种形式进行了封装。
+2、但ajax和jsonp其实本质上是不同的东西。ajax的核心是通过XmlHttpRequest获取非本页内容，而jsonp的核心则是动态添加。
